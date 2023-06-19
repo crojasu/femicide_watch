@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+joblib
+google-cloud-storage
+nltk
+pandas
+scikit-learn
+python-dotenv
