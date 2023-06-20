@@ -26,8 +26,6 @@ EXPOSE 8000
 # Set the credentials file path as a build-time argument
 ARG CREDENTIALS_FILE
 
-# Copy the credentials file from the host to the container
-COPY $CREDENTIALS_FILE /app/fmedia/credentials.json
 
 # Run the FastAPI application
 CMD ["uvicorn", "fmedia.main:app", "--host", "0.0.0.0", "--port", "8000"]

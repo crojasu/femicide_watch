@@ -9,9 +9,15 @@ def preprocess(text):
         return {"body": text}
 
     def just_text(text):
-        CLEANR = re.compile('<.*?>')
-        cleantext = re.sub(CLEANR, '', text['body'])
-        return cleantext
+        if isinstance(text, str):
+            try:
+                CLEANR = re.compile('<.*?>')
+                cleantext = re.sub(CLEANR, '', text)
+                return cleantext
+            except TypeError:
+                return text
+        else:
+            return ""
 
     def basic_cleaning(sentence):
         sentence = sentence.strip()
@@ -33,8 +39,8 @@ def preprocess(text):
         lemmatized_string = " ".join(lemmatized)
         return lemmatized_string
 
-    cleaned_text = imitating_guardian(text)
-    cleaned_text = just_text(cleaned_text)
+    #cleaned_text = imitating_guardian(text)
+    cleaned_text = just_text(text)
     cleaned_text = basic_cleaning(cleaned_text)
     cleaned_text = remove_stopwords(cleaned_text)
     cleaned_text = lemma(cleaned_text)
