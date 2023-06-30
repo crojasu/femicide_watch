@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Response
+from fastapi import FastAPI, Response, HTTPException
 from fmedia.model_storage import (
     load_model_from_gcs,
     model_exists_in_gcs,
@@ -6,6 +6,7 @@ from fmedia.model_storage import (
     update_data_to_gcs,
     combine_csv_files,
     get_csv_filenames,
+    get_gcs_bucket
 )
 from fmedia.preprocess import preprocess
 from fmedia.train_evaluate_predict import predict, main
@@ -13,8 +14,8 @@ from dotenv import load_dotenv
 import os
 from datetime import date
 import pandas as pd
-from fmedia.fetch_articles import fetch_articles, get_filtered_articles
-
+from fmedia.fetch_articles import fetch_articles_year, main as fetch_main
+import subprocess
 
 load_dotenv()  # Load environment variables from .env file
 
@@ -25,12 +26,12 @@ VECTORIZER_FILENAME = os.getenv("VECTORIZER_FILENAME")
 
 app = FastAPI()
 
+
 # Load the model and vectorizer
 if not model_exists_in_gcs(MODEL_FILENAME, VECTORIZER_FILENAME):
     main()
 else:
     model, vectorizer = load_model_from_gcs(MODEL_FILENAME, VECTORIZER_FILENAME)
-
 
 @app.get("/")
 def read_root():
@@ -48,41 +49,24 @@ def get_prediction(text: str):
 
     return {"prediction": prediction}
 
-@app.get("/fetch-articles")
-def fetch_articles_endpoint(start_date: date = None, end_date: date = None):
-    if start_date is None and end_date is None:
-        csv_filenames = get_csv_filenames('filtered_articles')
-        if csv_filenames:
-            csv_filenames.sort()
-            csv_filename = csv_filenames[0]
-            df_filtered = combine_csv_files(csv_filename)
-        else:
-            csv_filenames = get_csv_filenames('articles')
-            if csv_filenames:
-                csv_filenames.sort()
-                oldest_csv_filename = min(csv_filenames, key=extract_start_date)
-                df = combine_csv_files(oldest_csv_filename)
-                model, vectorizer = load_model_from_gcs(MODEL_FILENAME, VECTORIZER_FILENAME)
-                df_filtered = get_filtered_articles(df)
-                if df_filtered.empty:
-                    return {"message": "No filtered articles found"}
-                csv_filename = f"filtered_articles.csv"
-                update_data_to_gcs(df_filtered, csv_filename)
-            else:
-                return {"error": "No existing articles found"}
-    else:
-        df = fetch_articles(start_date, end_date)
-        model, vectorizer = load_model_from_gcs(MODEL_FILENAME, VECTORIZER_FILENAME)
-        df_filtered = get_filtered_articles(df)
-        if df_filtered.empty:
-            return {"message": "No filtered articles found"}
-        csv_filename = f"filtered_articles.csv"
-        update_data_to_gcs(df_filtered, csv_filename)
+@app.get("/fetch-articles/")
+async def fetch_articles_today():
+    articles = fetch_main()
+    
+    return articles
 
-    json_response = df_filtered[["webTitle", "webUrl"]].to_dict(orient="records")
-    csv_response = df_filtered.to_csv(index=False)
-    return Response(
-        content=csv_response,
-        media_type="text/csv",
-        headers={"Content-Disposition": f"attachment; filename={csv_filename}"},
-    ), json_response
+@app.get("/fetch-articles/{year}")
+async def fetch_articles_year(year: int):
+    articles = fetch_main(year)
+    
+    return articles
+
+@app.get("/fetch-articles/{start_year}/{end_year}")
+async def fetch_articles_range(start_year: int, end_year: int):
+    all_articles = []
+    for year in range(start_year, end_year+1):
+        year_articles = fetch_main(year)
+        all_articles.extend(year_articles['articles'])
+    
+    return all_articles
+
