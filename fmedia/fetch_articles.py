@@ -4,8 +4,8 @@ import os
 import requests
 import pandas as pd
 from datetime import date, datetime
-from fmedia.model_storage import load_model_from_gcs, update_data, blob_exists, load_data_from_gcp
-from fmedia.train_evaluate_predict import predict
+from .model_storage import load_model_from_gcs, update_data, blob_exists, load_data_from_gcp
+from .train_evaluate_predict import predict
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -46,15 +46,14 @@ def main(year=None):
         articles_generator = fetch_articles(date.today(), end_date)
     else:
         end_date = date(year+1, 1, 1)
-        file_name = f'filtered_articles_{year}.csv'
+        file_name = f'filtered_articles_{year}'
         print(f'blob {file_name}')
         if blob_exists(BUCKET_NAME, start_date):
             print(f'Fetching from csv {file_name}')
-            df = load_data_from_gcp(file_name)
+            df = load_data_from_gcp(file_name, year)
             articles = df.to_dict(orient='records')
             return {'articles': articles}
         else:
-            return
             articles_generator = fetch_articles_year(year)
     
     filtered_articles = []
@@ -74,7 +73,7 @@ def main(year=None):
                 filtered_articles.append(article)
                 if len(filtered_articles) % 100 == 0:
                     df_filtered = pd.DataFrame(filtered_articles)
-                    csv_filename = f'filtered_articles_{start_date}_{csv_counter}.csv'
+                    csv_filename = f'filtered_articles_{start_date}_{csv_counter}'
                     print(f'Saving filtered articles to {csv_filename}...')
                     update_data(df_filtered, csv_filename)
                     print('Saved successfully.')
@@ -105,7 +104,7 @@ def main(year=None):
         df_filtered = pd.DataFrame(filtered_articles)
         df_summary = pd.DataFrame(summary)
         df_final = pd.concat([df_filtered, df_summary])
-        csv_filename = f'filtered_articles_{start_date}_{csv_counter}.csv'
+        csv_filename = f'filtered_articles_{start_date}_{csv_counter}'
         print(f'Saving final batch of filtered articles to {csv_filename}...')
         update_data(df_final, csv_filename)
         print('Final batch saved successfully.')

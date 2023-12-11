@@ -3,7 +3,8 @@ import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
-from fmedia.preprocess import preprocess
+from .preprocess import preprocess
+from .model_storage import save_model_to_gcs
 
 def train(X, y):
     vectorizer = CountVectorizer(ngram_range=(1, 1), max_df=1.0, max_features=None)

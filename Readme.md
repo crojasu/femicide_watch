@@ -79,7 +79,7 @@ woman
 "a girl"
 "body of a woman"
 "prostitute"
-"sex worker"
+"sex worker"`
 
 These filters are combined using logical operators (AND, OR) to retrieve articles related to the specified keywords and entities within the specified date range. The URL also includes additional parameters for pagination, field selection (body, thumbnail), page size, and API key.
 
@@ -102,6 +102,6 @@ API of newspaper:
 Today it is connected to The Guardian. 
 TODO: enable more API
 
-How are we going to improove our model.
+How are we going to improve our model.
 We will create a bigger dataset with the articles we already detected daily.
 

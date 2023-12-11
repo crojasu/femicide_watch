@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Response, HTTPException
-from fmedia.model_storage import (
+from .model_storage import (
     load_model_from_gcs,
     model_exists_in_gcs,
     load_data_from_gcp,
@@ -8,13 +8,13 @@ from fmedia.model_storage import (
     get_csv_filenames,
     get_gcs_bucket
 )
-from fmedia.preprocess import preprocess
-from fmedia.train_evaluate_predict import predict, main
+from .preprocess import preprocess
+from .train_evaluate_predict import predict, main
 from dotenv import load_dotenv
 import os
 from datetime import date
 import pandas as pd
-from fmedia.fetch_articles import fetch_articles_year, main as fetch_main
+from .fetch_articles import fetch_articles_year, main as fetch_main
 import subprocess
 
 load_dotenv()  # Load environment variables from .env file

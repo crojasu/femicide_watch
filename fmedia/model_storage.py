@@ -1,7 +1,6 @@
 import requests
 import pandas as pd
 from datetime import date
-from fmedia.train_evaluate_predict import predict, main
 import ast
 import io
 from dotenv import load_dotenv
@@ -83,10 +82,10 @@ def get_csv_filenames(bucket, year: str) -> List[str]:
     
     return csv_files
 
-def load_data_from_gcp(csv_filename):
+def load_data_from_gcp(csv_filename, year):
     bucket = get_gcs_bucket()
-    blob = bucket.blob(f"data/{csv_filename}.csv")
-    if not blob.exists():
+    blob = bucket.blob(f"{csv_filename}")
+    if not blob_exists(BUCKET_NAME, year):
         raise FileNotFoundError(f"CSV file '{csv_filename}' does not exist in the bucket")
 
     content = blob.download_as_text()
@@ -97,11 +96,11 @@ def load_data_from_gcp(csv_filename):
     
     return df
 
-def combine_csv_files(bucket, csv_filenames: List[str]) -> pd.DataFrame:
+def combine_csv_files(bucket, csv_filenames: List[str], year: str) -> pd.DataFrame:
     dfs = []
     for csv_file in csv_filenames:
         print(f"Processing {csv_file}")
-        df = load_data_from_gcp(csv_file)
+        df = load_data_from_gcp(csv_file, year)  # Include the year argument here
         if df is not None:
             dfs.append(df)
     print(f"Number of DataFrames: {len(dfs)}")
@@ -129,16 +128,20 @@ def update_data(df, year: str):
     print(f"Existing CSV files: {existing_csv_files}")
 
     # Combine all the existing CSV files into a single DataFrame
-    existing_df = combine_csv_files(bucket, existing_csv_files)
+    existing_df = combine_csv_files(bucket, existing_csv_files, year)
 
-    # Append the new data to the existing data
-    updated_df = existing_df.append(df)
+    # Check if existing_df is None or empty, if so, use the new df as the updated_df
+    if existing_df is None or existing_df.empty:
+        updated_df = df
+    else:
+        updated_df = existing_df.append(df)
 
     # Delete the old CSV files
     delete_old_csv_files(bucket, existing_csv_files)
 
     # Save the updated data to a new CSV file
-    new_csv_filename = f"data_{year}.csv"
+    new_csv_filename = f"data_{year}"
     update_data_to_gcs(updated_df, new_csv_filename)
 
     return f"Data updated to {new_csv_filename} in Google Cloud Storage"
+
