@@ -63,7 +63,8 @@ def model_exists_in_gcs(model_filename, vectorizer_filename):
     vectorizer_blob = bucket.blob(f"{MODEL_NAME}/{vectorizer_filename}")
     return model_blob.exists() and vectorizer_blob.exists()
 
-def update_data_to_gcs(df, csv_filename):
+def save_data_to_gcs(articles_data, csv_filename):
+    # Get the Google Cloud Storage bucket
     bucket = get_gcs_bucket()
 
     # Save the DataFrame as CSV
@@ -84,7 +85,7 @@ def get_csv_filenames(bucket, year: str) -> List[str]:
 
 def load_data_from_gcp(csv_filename, year):
     bucket = get_gcs_bucket()
-    blob = bucket.blob(f"{csv_filename}")
+    blob = bucket.blob(f"data/{csv_filename}")
     if not blob_exists(BUCKET_NAME, year):
         raise FileNotFoundError(f"CSV file '{csv_filename}' does not exist in the bucket")
 
@@ -94,54 +95,6 @@ def load_data_from_gcp(csv_filename, year):
         return None
     df = pd.read_csv(io.StringIO(content))
     
+    print(df)
     return df
-
-def combine_csv_files(bucket, csv_filenames: List[str], year: str) -> pd.DataFrame:
-    dfs = []
-    for csv_file in csv_filenames:
-        print(f"Processing {csv_file}")
-        df = load_data_from_gcp(csv_file, year)  # Include the year argument here
-        if df is not None:
-            dfs.append(df)
-    print(f"Number of DataFrames: {len(dfs)}")
-    if len(dfs) == 0:
-        print("No DataFrames to concatenate.")
-        return None
-    combined_df = pd.concat(dfs)
-    
-    return combined_df
-
-def delete_old_csv_files(bucket, csv_filenames: List[str]):
-    for csv_file in csv_filenames:
-        blob = bucket.blob(csv_file)
-        if blob.exists():
-            print(f"Deleting {csv_file}")
-            blob.delete()
-        else:
-            print(f"{csv_file} does not exist, skipping deletion...")
-
-def update_data(df, year: str):
-    bucket = get_gcs_bucket()
-
-    # Get all the existing CSV files that contain the specified year in their name
-    existing_csv_files = get_csv_filenames(bucket, year)
-    print(f"Existing CSV files: {existing_csv_files}")
-
-    # Combine all the existing CSV files into a single DataFrame
-    existing_df = combine_csv_files(bucket, existing_csv_files, year)
-
-    # Check if existing_df is None or empty, if so, use the new df as the updated_df
-    if existing_df is None or existing_df.empty:
-        updated_df = df
-    else:
-        updated_df = existing_df.append(df)
-
-    # Delete the old CSV files
-    delete_old_csv_files(bucket, existing_csv_files)
-
-    # Save the updated data to a new CSV file
-    new_csv_filename = f"data_{year}"
-    update_data_to_gcs(updated_df, new_csv_filename)
-
-    return f"Data updated to {new_csv_filename} in Google Cloud Storage"
 

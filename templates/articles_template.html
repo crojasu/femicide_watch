@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FMedia API</title>
+    <link href="/static/styles.css" rel="stylesheet">
+    <style>
+        .loader {
+            border: 16px solid #f3f3f3; /* Light grey */
+            border-top: 16px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 50%;
+            top: 50%;
+            margin-left: -60px; /* Half of width */
+            margin-top: -60px; /* Half of height */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/">
+            <img src="/data/logo.png" class="logo" alt="Home">
+        </a>
+        <div class="centered-content">       
+            <h1>Articles</h1>
+            <h2>Summary</h2>
+            <p>Start Date: {{ summary.start_date }}</p>
+            <p>End Date: {{ summary.end_date }}</p>
+            <p>Total Articles Processed: {{ summary.total_articles_processed }}</p>
+            <p>Total True Predictions: {{ summary.total_true_predictions }}</p>
+            <p>Total False Predictions: {{ summary.total_false_predictions }}</p>
+            <h2>Articles</h2>
+            <div>
+                {% for article in articles %}
+                    <div class="card">
+                        <h3><a href="{{ article.webUrl }}">{{ article.webTitle }}</a></h3>
+                        <img src="{{ article.fields.thumbnail }}" alt="Thumbnail" style="width:100%;">
+                        <p>{{ article.fields.body | safe }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

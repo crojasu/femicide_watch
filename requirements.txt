@@ -6,3 +6,5 @@ nltk
 pandas
 scikit-learn
 python-dotenv
+jinja2
+mediacloud-api-legacy

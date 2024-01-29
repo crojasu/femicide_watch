@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FMedia API</title>
+    <link href="/static/styles.css" rel="stylesheet">
+    <style>
+        .loader {
+            border: 16px solid #f3f3f3; /* Light grey */
+            border-top: 16px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 50%;
+            top: 50%;
+            margin-left: -60px; /* Half of width */
+            margin-top: -60px; /* Half of height */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .cardrwo {
+            text-align: center; /* Center the text horizontally */
+            max-width: 300px;    /* Limit the width to 300px */
+            margin: 0 auto;      /* Center the element horizontally */
+        }
+        .space{
+            max-width: 300px;    /* Limit the width to 300px */
+            margin: 0 auto;    
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/">
+            <img src="/data/logo.png" class="logo" alt="Home">
+        </a> 
+        <h1>Welcome to FMedia API!</h1>
+        <p>This is the home page of the FMedia API.</p>
+        <form action="/docs" method="get" onsubmit="showLoader()">
+            <button type="submit">Swagger Documentation</button>
+        </form>
+        <div class="space"></div>
+    </div>
+    <div class="loader"></div>
+</body>
+</html>
