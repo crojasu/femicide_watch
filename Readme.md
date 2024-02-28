@@ -54,10 +54,6 @@ We encourage users and developers to explore both the application and its API do
   
   - **Check Today's Articles**: To check for articles published today, visit `http://femicidewatch-5a7c7e9e2d35.herokuapp.com/fetch-articles/`. This endpoint is especially useful for daily monitoring.
 
-### Daily Backend Job
-
-A backend job is executed daily through a sidekiq job that invokes the `fetch_articles` function with today's date. This ensures that the application continually updates its dataset with the latest articles.
-
 ## Building the Dataset and Training the Model
 
 The foundation of Femicide Media Watch lies in its ability to accurately predict femicide-related content. This capability is derived from a carefully curated dataset and a rigorously trained model.
@@ -95,6 +91,7 @@ These filters were strategically combined using logical operators (AND, OR) to r
 
 ```plaintext
 url_pattern = 'https://content.guardianapis.com/search?q=(murder OR homicide OR femicide OR feminicide OR murdered OR dead OR death OR killed OR shot OR stabbed OR struck OR strangled OR "lifeless") AND (woman OR girl OR "a young woman" OR "a teenage girl" OR "a girl" OR "body of a woman" OR prostitute OR "sex worker")&from-date={start_date}&to-date={end_date}&show-fields=body,thumbnail&page-size=50&page={page}&api-key=test'
+```
 
 ## Training the Model
 
@@ -106,7 +103,7 @@ To retrain the model with an expanded dataset, ensure the environment variable `
 
 ```bash
 make train f"data/{dataset_with_ceros}"
-
+```
 This process will train the model with the new dataset, automatically updating the production model and vectorizer if the new model demonstrates improved precision.
 
 ## License
