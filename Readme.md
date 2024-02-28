@@ -112,7 +112,7 @@ This project is open-source and available for use and modification. However, we 
 
 ## Acknowledgments
 
-This project was developed under the umbrella and with the support of WeLevelUp. We extend our deepest gratitude to WeLevelUp for their encouragement, resources, and commitment to fostering innovation and development in the field of technology for social good.
+This project was developed under the umbrella and with the support of [Level Up UK](https://www.welevelup.org). We extend our deepest gratitude to [Level Up UK](https://www.welevelup.org) for their encouragement, resources, and commitment to fostering innovation and development in the field of technology for gender equality.
 
 
 
