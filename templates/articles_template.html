@@ -38,14 +38,14 @@
             <p>End Date: {{ summary.end_date }}</p>
             <p>Total Articles Processed: {{ summary.total_articles_processed }}</p>
             <p>Total True Predictions: {{ summary.total_true_predictions }}</p>
-            <p>Total False Predictions: {{ summary.total_false_predictions }}</p>
             <h2>Articles</h2>
             <div>
                 {% for article in articles %}
                     <div class="card">
-                        <h3><a href="{{ article.webUrl }}">{{ article.webTitle }}</a></h3>
-                        <img src="{{ article.fields.thumbnail }}" alt="Thumbnail" style="width:100%;">
-                        <p>{{ article.fields.body | safe }}</p>
+                        <h3>{{article.title}}<a href="{{ article.webUrl }}">{{ article.webTitle }}</a></h3>
+                        <p>{{ article.content | safe }}</p>
+                        <img src="{{ article.thumbnail }}" alt="Thumbnail" style="width:30%;">
+                        <p>{{ article.webUrl }}</p>
                     </div>
                 {% endfor %}
             </div>
