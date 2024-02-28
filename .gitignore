@@ -1,0 +1,8 @@
+# Ignore data files
+.env
+# Ignore specific data files
+data/femicide_final_with_ceros.csv
+data/merged_email_data.csv
+data/femicide-media-watch-5d9d1fc3e2cf.json
+# Ignore entire directories
+venv/
