@@ -2,18 +2,34 @@
 
 ## Overview
 
-incluide in this overview: that the app is deployed in heroku , that works, with api fast, docker, and python, and we use this librerys fastapi
-uvicorn
-joblib
-google-cloud-storage
-nltk
-pandas
-scikit-learn
-python-dotenv
-jinja2
-mediacloud-api-legacy 
+Femicide Media Watch is a Python application deployed on Heroku, designed to predict whether a text is about femicide. This powerful tool aids in filtering newspaper articles, highlighting relevant content, and storing it in a database. It leverages a modern tech stack including FastAPI for creating a fast and efficient API, Docker for containerization, and Python for the backend logic.
 
-Femicide Media Watch is a Python application designed to predict whether a text is about femicide. This tool aids in filtering newspaper articles, highlighting relevant content, and storing it in a database. It aims to identify indicators from the text, including the style of writing, to enhance awareness and understanding of femicide reporting.
+The application utilizes several libraries to process and analyze data effectively:
+
+- `FastAPI`: For building a high-performance API that is easy to develop, scale, and deploy.
+- `Uvicorn`: An ASGI server for FastAPI, providing lightning-fast asynchronous capabilities.
+- `Joblib`: For efficient serialization of Python objects, aiding in model persistence.
+- `Google Cloud Storage`: To store and retrieve model artifacts and datasets securely in the cloud.
+- `NLTK`: Natural Language Toolkit, used for text processing and analysis.
+- `Pandas`: For data manipulation and analysis, providing high-performance, easy-to-use data structures.
+- `Scikit-learn`: A tool for data mining and data analysis, used extensively for building the machine learning model.
+- `Python-dotenv`: To manage environment variables, keeping configuration separate from code.
+- `Jinja2`: A templating language for Python, enabling dynamic rendering of HTML.
+- `Mediacloud-api-legacy`: For accessing and analyzing media data across the web, aiding in dataset creation.
+
+
+## Accessing the Application
+
+The Femicide Media Watch application is deployed and accessible online. You can interact with the live application and explore its features through the following link:
+
+- **Running App**: [Femicide Media Watch Application](http://femicidewatch-5a7c7e9e2d35.herokuapp.com/)
+
+For developers and users interested in accessing the API directly, detailed API documentation is available. The documentation provides insights into the available endpoints, their usage, and how to integrate with the API:
+
+- **API Documentation**: [Femicide Media Watch API Docs](http://femicidewatch-5a7c7e9e2d35.herokuapp.com/docs)
+
+We encourage users and developers to explore both the application and its API documentation to fully understand the capabilities and potential uses of Femicide Media Watch.
+
 
 ## Repository Structure
 
