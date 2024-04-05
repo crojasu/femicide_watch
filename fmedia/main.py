@@ -35,8 +35,8 @@ app.mount("/data", StaticFiles(directory="data"), name="data")
 
 templates = Jinja2Templates(directory="templates")
 
-csv_file_path = 'data/merged_email_data.csv'  # Replace with your CSV file path
-df = pd.read_csv(csv_file_path)
+# csv_file_path = 'data/merged_email_data.csv'  # Replace with your CSV file path
+# df = pd.read_csv(csv_file_path)
 
 # Load the model and vectorizer
 if not model_exists_in_gcs(MODEL_FILENAME, VECTORIZER_FILENAME):
@@ -90,26 +90,28 @@ def get_prediction(text: str):
 
 @app.get("/fetch-articles/", response_model=ArticlesResponse, summary="Fetch articles for today")
 async def fetch_articles_today(request: Request):
-    """
-    Fetches and returns articles for the current day along with a summary.
-    The response includes a list of articles and summary statistics.
+    try:
+        # Attempt to fetch today's articles. Ensure fetch_main is designed to handle None appropriately.
+        articles_data = fetch_main(None)  # Assuming this function is properly returning the expected data structure.
+    except KeyError as e:
+        # Log the error for debugging.
+        print(f"KeyError encountered: {e}")
+        # Return a response indicating an issue with fetching articles.
+        return JSONResponse(
+            status_code=500,
+            content={"message": "An error occurred while fetching articles. Please try again later."}
+        )
 
-    The function checks the 'Accept' header in the request to determine 
-    whether to return HTML or JSON.
-
-    Returns:
-    A JSON response containing articles and a summary if 'Accept' is not 'text/html'.
-    An HTML response if 'Accept' is 'text/html'.
-    """
-    articles_data = fetch_main(None)  # Replace with actual function to fetch articles
-
+    # Check if 'text/html' is in the request's 'Accept' header.
     if "text/html" in request.headers.get('accept', ''):
+        # If so, return an HTML response.
         return templates.TemplateResponse("articles_template.html", {
             "request": request,
-            "summary": articles_data["summary"],
-            "articles": articles_data["articles"]
+            "summary": articles_data.get("summary", "No summary available."),
+            "articles": articles_data.get("articles", [])
         })
 
+    # Otherwise, return a JSON response.
     return ArticlesResponse(**articles_data)
 
 # Endpoint to fetch articles by year
@@ -153,27 +155,27 @@ async def fetch_articles_range(start_year: int, end_year: int, start_month: int 
     return ArticlesResponse(articles=all_articles)
   """
 
-@app.get("/info-by-postcode/{postcode}", response_model=List[PostcodeInfo], summary="Get information by postcode")
-async def get_info_by_postcode(postcode: str):
-    """
-    Retrieve information for a given postcode.
+# @app.get("/info-by-postcode/{postcode}", response_model=List[PostcodeInfo], summary="Get information by postcode")
+# async def get_info_by_postcode(postcode: str):
+#     """
+#     Retrieve information for a given postcode.
     
-    This endpoint normalizes the provided postcode to remove spaces and searches
-    for matching entries in the data. It returns detailed information about
-    the person or entity associated with that postcode.
+#     This endpoint normalizes the provided postcode to remove spaces and searches
+#     for matching entries in the data. It returns detailed information about
+#     the person or entity associated with that postcode.
 
-    Parameters:
-    - postcode: A string representing the postcode, with or without spaces.
+#     Parameters:
+#     - postcode: A string representing the postcode, with or without spaces.
 
-    Returns:
-    A list of information entries matching the provided postcode.
-    """
-    normalized_input_postcode = normalize_postcode(postcode)
-    df['normalized_pcds'] = df['pcds'].apply(normalize_postcode)
-    filtered_df = df[df['normalized_pcds'] == normalized_input_postcode]
+#     Returns:
+#     A list of information entries matching the provided postcode.
+#     """
+#     normalized_input_postcode = normalize_postcode(postcode)
+#     df['normalized_pcds'] = df['pcds'].apply(normalize_postcode)
+#     filtered_df = df[df['normalized_pcds'] == normalized_input_postcode]
 
-    if filtered_df.empty:
-        raise HTTPException(status_code=404, detail="No information found for this postcode")
+#     if filtered_df.empty:
+#         raise HTTPException(status_code=404, detail="No information found for this postcode")
 
-    info = [PostcodeInfo(**row) for row in filtered_df.to_dict(orient='records')]
-    return info
+#     info = [PostcodeInfo(**row) for row in filtered_df.to_dict(orient='records')]
+#     return info

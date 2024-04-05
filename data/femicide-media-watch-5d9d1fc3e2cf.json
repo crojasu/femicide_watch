@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "femicide-media-watch",
+  "private_key_id": "5d9d1fc3e2cf32dba8655f6ed5f3367063035566",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC22XrToXNidWiG\nJJOPnY5yrdNmiHazipIxj2KM4hb8U6Asbwut7pBdBAB2uk/3RCCigfv9hijJd3pV\nBtq/+2n89WNmsGGvoYS50vB2CSNBmcjJgmOml2/EdlHI9AmUbyQwy6+/gEit3ipq\nEKqE3ePkVp/P9n49/cLzRAhNQGmKvE0iOq9R2x8GJjvM2jwt+n4xXk8KD1cmQyzR\nyBmiSFUFmGpZWXaaUncHmgcLvpeNP5yqdSJ6xibvSQ7ErehN96fqclp/NyanvMb0\nv3KcyYUotywYJjA+VOy/cuPo9rsc9MLVJ/QDcMMQO+rjdJfMs/Hl64hVMUaLkYAk\njqKroW7ZAgMBAAECggEADdlsXRPvGUOnDHUAA7pVcCB0IQGgSwJJhy0y89SKlOdR\nHBh3mB+YCeGMFvIO7T244pIpl9bl5zeQWZkUr8KfUSB1fFFK/tpjIw+D9M7Fn7oC\nDCg++77f4W+sS2YXhSmDYlpFKCIzbw7jI8g6ICjt0k1Q2rey8WdTcSlDnzVMISy3\nsuLP3Uq/47canAOxHEaEb6JeGerCyQ3bWD6jCXxnd6GEaaOvasIxrUMLJl79e6n2\ndv02gI2I3xXUdI2sMyt473y1qwkOPXP4fWWAKeHS5Zdq4g1F8YEbKnEgZsDl4VKc\naA1MhVOF0GUxR19TjbxGElqKI8BdmYW2ENVL7v9PoQKBgQD3HGB2Fmm5rdQT6cz7\nbf3dMxD4biZd/Y362slBnD6N/7govnwg82+k5Y1xHWIWhgDIthNiQwtiAAHGiEO3\naqXoiuATxUUofbejvLn4pSaymJMrWnYfdoSxholc1HgglDmyASsIkNZXw6NXpiql\nECNmchiUv06gOmC9YNGGAlx3OQKBgQC9bVNs9erNJKU/km2hFtqz2SXQqq4I4P0e\nT3ggyutvkR9zJtWEtv2DU2zOLOllIELMgT5Gmiq5dB5+Gmix+C2SBG28SvZeZe/D\ngB7SPxCS8JCxiJD8ojBKGTmgxPePcOk8uIpuY/lCqGNyRlP2qnIdK7T2XkiJ/yXw\nW+Q3TXoUoQKBgBvZbN2iJQQyHQapgNqNSOEXEkCNWXGaU9gDtE7apwol2cFtxluI\nU/rHjCtFXnqfW5NDQef/GldPHOQdE1SmhlAw5pQT1Xl8waeIa4UkR7o1C9EE/u8I\n0meXe/+kSm2RhvcSvqDWgfGeMNh996xmpzaygSaycNAKBEETmkl6FqWxAoGAfv9m\n6SxOSU8CQwbG3TNXWTCCe82SdH1y9flNjp69DcV8ElW83QdaG8u4rNnLeHMSlc0o\nlWkSr9c8AktuWbMLylORxqVzW4J4Jtgk0cxaLkl+mKf4nIeYXHVg/3pOhyqqFH2c\nwbnhCWGfmqOv8zX+37PH1U0M0QfwxZ61+KXG7UECgYEAycHKiYrHMbqOgcEMfIa2\nj56oBJs9HbCXPIore0i9HCgPgizaPmTqCbzL840J0MgJZDn7ku/SCxnXWMREaRoq\n2pV5E4/jMrlowqDBlNbAtni80KOXzwsbdzux1Qgc0ZXGMmp6oJ5auFl+WL/zcKFB\n8nkZe4S3G3LnqRf9/kKsvgA=\n-----END PRIVATE KEY-----\n",
+  "client_email": "femicide-web@femicide-media-watch.iam.gserviceaccount.com",
+  "client_id": "105570437208428690277",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/femicide-web%40femicide-media-watch.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

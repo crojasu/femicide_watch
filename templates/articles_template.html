@@ -24,6 +24,11 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        /* Add margin to the container */
+        .centered-content {
+            margin: 20px;
+        }
     </style>
 </head>
 <body>
@@ -42,10 +47,10 @@
             <div>
                 {% for article in articles %}
                     <div class="card">
-                        <h3>{{article.title}}<a href="{{ article.webUrl }}">{{ article.webTitle }}</a></h3>
+                        <h3><a href="{{ article.webUrl }}">{{ article.title }}</a></h3>
                         <p>{{ article.content | safe }}</p>
                         <img src="{{ article.thumbnail }}" alt="Thumbnail" style="width:30%;">
-                        <p>{{ article.webUrl }}</p>
+                        <p><a href="{{ article.webUrl }}">{{ article.webUrl }}</a></p>
                     </div>
                 {% endfor %}
             </div>

@@ -1,6 +1,4 @@
 # Ignore data files
 .env
-# Ignore specific data files
-data/*
 # Ignore entire directories
 venv/

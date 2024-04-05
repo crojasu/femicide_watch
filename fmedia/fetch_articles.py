@@ -14,6 +14,7 @@ load_dotenv()
 BUCKET_NAME = os.getenv("BUCKET_NAME")
 MODEL_FILENAME = os.getenv("MODEL_FILENAME")
 VECTORIZER_FILENAME = os.getenv("VECTORIZER_FILENAME")
+guardian_api_key = os.getenv("GUARDIAN_API_KEY", "default_api_key_if_not_set")
 
 def fetch_articles_from_gcp(year):
     # Load data from GCP if available
@@ -26,7 +27,7 @@ def fetch_articles_from_gcp(year):
     return None
 
 def fetch_articles(start_date: date, end_date: date, start_page=1):
-    url_pattern = 'https://content.guardianapis.com/search?q=&from-date={start_date}&to-date={end_date}&show-fields=body,thumbnail&page-size=100&page={page}&api-key=test'
+    url_pattern = f'https://content.guardianapis.com/search?q=&from-date={{start_date}}&to-date={{end_date}}&show-fields=body,thumbnail&page-size=100&page={{page}}&api-key={guardian_api_key}'
     page = start_page
 
     while True:
@@ -43,7 +44,7 @@ def fetch_articles(start_date: date, end_date: date, start_page=1):
 
         current_page = response["response"]["currentPage"]
         total_pages = response["response"]["pages"]
-        if current_page == 2:
+        if current_page == total_pages:
             break
 
         page += 1
