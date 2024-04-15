@@ -2,7 +2,7 @@
 
 ## Overview
 
-Femicide Media Watch is a Python application deployed on Heroku, designed to predict whether a text is about femicide. This powerful tool aids in filtering newspaper articles, highlighting relevant content, and storing it in a database. It leverages a modern tech stack including FastAPI for creating a fast and efficient API, Docker for containerization, and Python for the backend logic.
+Femicide Media Watch is a Python application deployed on Heroku, designed to predict whether a text is about femicide. This tool aids in filtering newspaper articles, highlighting relevant content, and storing it in a database. It leverages a modern tech stack including FastAPI for creating a fast and efficient API, Docker for containerization, and Python for the backend logic.
 
 The application utilizes several libraries to process and analyze data effectively:
 
