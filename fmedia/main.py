@@ -66,11 +66,15 @@ templates = Jinja2Templates(directory="templates")
 # csv_file_path = 'data/merged_email_data.csv'  # Replace with your CSV file path
 # df = pd.read_csv(csv_file_path)
 
-# Load the model and vectorizer
-if not model_exists_in_gcs(MODEL_FILENAME, VECTORIZER_FILENAME):
-    main()
-else:
-    model, vectorizer = load_model_from_gcs(MODEL_FILENAME, VECTORIZER_FILENAME)
+# Load the model and vectorizer (optional — Groq is primary classifier)
+model, vectorizer = None, None
+try:
+    if not model_exists_in_gcs(MODEL_FILENAME, VECTORIZER_FILENAME):
+        main()
+    else:
+        model, vectorizer = load_model_from_gcs(MODEL_FILENAME, VECTORIZER_FILENAME)
+except Exception as e:
+    logger.warning(f"Could not load model from GCS (Groq will be used): {e}")
 
 def normalize_postcode(postcode) -> str:
     """Remove spaces from the postcode. Handles non-string inputs."""
