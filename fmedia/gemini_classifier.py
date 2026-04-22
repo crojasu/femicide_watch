@@ -9,7 +9,7 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-MAX_TEXT_CHARS = 3000
+MAX_TEXT_CHARS = 800  # title + first paragraph only — saves ~10x tokens
 _last_request_time = 0.0
 _MIN_INTERVAL = 2.0  # ~30 RPM safe rate for free tier
 
@@ -48,7 +48,7 @@ def classify(text: str, rate_limit: bool = False) -> bool | None:
     try:
         client = Groq(api_key=GROQ_API_KEY)
         response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="llama-3.1-8b-instant",
             messages=[{"role": "user", "content": PROMPT.format(text=text[:MAX_TEXT_CHARS])}],
             temperature=0,
             max_tokens=10,
