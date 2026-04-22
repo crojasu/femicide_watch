@@ -16,7 +16,7 @@ BUCKET_NAME = os.getenv("BUCKET_NAME")
 MODEL_FILENAME = os.getenv("MODEL_FILENAME")
 VECTORIZER_FILENAME = os.getenv("VECTORIZER_FILENAME")
 guardian_api_key = os.getenv("GUARDIAN_API_KEY", "default_api_key_if_not_set")
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 def fetch_articles_from_gcp(year):
     # Load data from GCP if available
@@ -35,7 +35,6 @@ def fetch_articles(start_date: date, end_date: date, start_page=1):
     while True:
         print(f'Fetching page {page}...')
         url = url_pattern.format(start_date=start_date, end_date=end_date, page=page)
-        print(url)
         response = requests.get(url).json()
         articles = response["response"]["results"]
 
@@ -55,14 +54,14 @@ def fetch_articles(start_date: date, end_date: date, start_page=1):
     return articles
 
 def _classify_article(text: str, vectorizer, model, is_batch: bool) -> bool:
-    """Two-stage classification: Gemini primary, Naive Bayes fallback.
+    """Two-stage classification: Groq/LLM primary, Naive Bayes fallback.
 
-    For batch/historical mode, Naive Bayes pre-filters before calling Gemini
+    For batch/historical mode, Naive Bayes pre-filters before calling Groq
     to stay within free tier rate limits.
     """
-    use_gemini = bool(GEMINI_API_KEY)
+    use_llm = bool(GROQ_API_KEY)
 
-    if is_batch and use_gemini:
+    if is_batch and use_llm:
         # Stage 1: Naive Bayes pre-filter (fast, free, catches obvious negatives)
         nb_prediction = predict(text, vectorizer=vectorizer, model=model)
         if not nb_prediction:
@@ -71,7 +70,7 @@ def _classify_article(text: str, vectorizer, model, is_batch: bool) -> bool:
         result = gemini_classify(text, rate_limit=True)
         return result if result is not None else nb_prediction
 
-    if use_gemini:
+    if use_llm:
         # Daily mode: Gemini directly, no rate limit needed
         result = gemini_classify(text, rate_limit=False)
         return result if result is not None else predict(text, vectorizer=vectorizer, model=model)
@@ -82,11 +81,11 @@ def _classify_article(text: str, vectorizer, model, is_batch: bool) -> bool:
 
 def main(year=None):
     is_batch = year is not None
-    use_gemini = bool(GEMINI_API_KEY)
+    use_llm = bool(GROQ_API_KEY)
 
     # Only load GCS model if needed (fallback or batch pre-filter)
     model, vectorizer = None, None
-    if not use_gemini or is_batch:
+    if not use_llm or is_batch:
         model, vectorizer = load_model_from_gcs(MODEL_FILENAME, VECTORIZER_FILENAME)
 
     if year is None:
