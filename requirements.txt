@@ -2,6 +2,7 @@ fastapi
 uvicorn
 joblib
 google-cloud-storage
+groq
 nltk
 pandas
 scikit-learn

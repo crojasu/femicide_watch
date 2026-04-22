@@ -5,6 +5,7 @@ import pandas as pd
 from datetime import date
 from .model_storage import load_model_from_gcs, save_data_to_gcs, blob_exists, load_data_from_gcp
 from .train_evaluate_predict import predict
+from .gemini_classifier import classify as gemini_classify
 from dotenv import load_dotenv
 import argparse
 import time
@@ -15,6 +16,7 @@ BUCKET_NAME = os.getenv("BUCKET_NAME")
 MODEL_FILENAME = os.getenv("MODEL_FILENAME")
 VECTORIZER_FILENAME = os.getenv("VECTORIZER_FILENAME")
 guardian_api_key = os.getenv("GUARDIAN_API_KEY", "default_api_key_if_not_set")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 def fetch_articles_from_gcp(year):
     # Load data from GCP if available
@@ -27,16 +29,17 @@ def fetch_articles_from_gcp(year):
     return None
 
 def fetch_articles(start_date: date, end_date: date, start_page=1):
-    url_pattern = f'https://content.guardianapis.com/search?q=&from-date={{start_date}}&to-date={{end_date}}&show-fields=body,thumbnail&page-size=100&page={{page}}&api-key={guardian_api_key}'
+    url_pattern = f'https://content.guardianapis.com/search?&from-date={{start_date}}&to-date={{end_date}}&show-fields=body,thumbnail&page-size=100&page={{page}}&api-key={guardian_api_key}'
     page = start_page
 
     while True:
         print(f'Fetching page {page}...')
         url = url_pattern.format(start_date=start_date, end_date=end_date, page=page)
+        print(url)
         response = requests.get(url).json()
         articles = response["response"]["results"]
 
-        if not articles:  # Break if no articles are returned
+        if not articles: 
             break
 
         for article in articles:
@@ -51,8 +54,40 @@ def fetch_articles(start_date: date, end_date: date, start_page=1):
 
     return articles
 
+def _classify_article(text: str, vectorizer, model, is_batch: bool) -> bool:
+    """Two-stage classification: Gemini primary, Naive Bayes fallback.
+
+    For batch/historical mode, Naive Bayes pre-filters before calling Gemini
+    to stay within free tier rate limits.
+    """
+    use_gemini = bool(GEMINI_API_KEY)
+
+    if is_batch and use_gemini:
+        # Stage 1: Naive Bayes pre-filter (fast, free, catches obvious negatives)
+        nb_prediction = predict(text, vectorizer=vectorizer, model=model)
+        if not nb_prediction:
+            return False
+        # Stage 2: Gemini verifies NB positives (rate-limited)
+        result = gemini_classify(text, rate_limit=True)
+        return result if result is not None else nb_prediction
+
+    if use_gemini:
+        # Daily mode: Gemini directly, no rate limit needed
+        result = gemini_classify(text, rate_limit=False)
+        return result if result is not None else predict(text, vectorizer=vectorizer, model=model)
+
+    # No Gemini key: fall back to Naive Bayes
+    return predict(text, vectorizer=vectorizer, model=model)
+
+
 def main(year=None):
-    model, vectorizer = load_model_from_gcs(MODEL_FILENAME, VECTORIZER_FILENAME)
+    is_batch = year is not None
+    use_gemini = bool(GEMINI_API_KEY)
+
+    # Only load GCS model if needed (fallback or batch pre-filter)
+    model, vectorizer = None, None
+    if not use_gemini or is_batch:
+        model, vectorizer = load_model_from_gcs(MODEL_FILENAME, VECTORIZER_FILENAME)
 
     if year is None:
         start_date = date.today()
@@ -71,7 +106,7 @@ def main(year=None):
     if articles_data is None:
         # Data not found in GCP, fetch from API
         articles_generator = fetch_articles(start_date, end_date)
-        
+
         for i, article in enumerate(articles_generator, start=1):
             print(f'Processing article {i}...')
             common_article = {
@@ -89,10 +124,10 @@ def main(year=None):
             if common_article["content"]:
                 total_articles_processed += 1
                 body_text = common_article["content"]
-                prediction = predict(body_text, vectorizer=vectorizer, model=model)
+                prediction = _classify_article(body_text, vectorizer, model, is_batch)
                 if prediction:
                     total_true_predictions += 1
-                    filtered_articles.append(common_article)  # Keep only true predictions
+                    filtered_articles.append(common_article)
 
         print(f'Start date: {start_date}')
         print(f'End date: {end_date}')
