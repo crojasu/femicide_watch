@@ -3,6 +3,7 @@ uvicorn
 joblib
 google-cloud-storage
 groq
+apscheduler
 nltk
 pandas
 scikit-learn

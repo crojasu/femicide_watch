@@ -10,6 +10,9 @@ from .preprocess import preprocess
 from .train_evaluate_predict import predict, main
 from dotenv import load_dotenv
 import os
+import logging
+import asyncio
+from contextlib import asynccontextmanager
 from datetime import date
 import pandas as pd
 from .fetch_articles import main as fetch_main
@@ -20,15 +23,40 @@ from fastapi.staticfiles import StaticFiles
 from .models import PostcodeInfo, ArticleSummary, Article, ArticlesResponse
 from typing import List
 from pydantic import BaseModel
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
 
-load_dotenv()  # Load environment variables from .env file
+load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 # Get the environment variables
 BUCKET_NAME = os.getenv("BUCKET_NAME")
 MODEL_FILENAME = os.getenv("MODEL_FILENAME")
 VECTORIZER_FILENAME = os.getenv("VECTORIZER_FILENAME")
 
-app = FastAPI()
+
+async def run_daily_classification():
+    logger.info("Running scheduled daily classification...")
+    try:
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(None, fetch_main, None)
+        logger.info("Daily classification completed.")
+    except Exception as e:
+        logger.error(f"Daily classification failed: {e}")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    scheduler = AsyncIOScheduler()
+    scheduler.add_job(run_daily_classification, CronTrigger(hour=0, minute=0))
+    scheduler.start()
+    logger.info("Scheduler started — daily classification at midnight UTC.")
+    yield
+    scheduler.shutdown()
+
+
+app = FastAPI(lifespan=lifespan)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/data", StaticFiles(directory="data"), name="data")
