@@ -1,4 +1,7 @@
 # Ignore data files
 .env
+data/*.json
+
 # Ignore entire directories
 venv/
+.omc/
